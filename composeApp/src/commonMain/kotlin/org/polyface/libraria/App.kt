@@ -4,12 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,8 +30,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.sun.jndi.toolkit.url.Uri
@@ -60,31 +65,58 @@ fun App() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2), // 👈 2 per row
+                    columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    item { Spacer(Modifier.size(20.dp)) }
-                    items(files.count(), key = { it }) {
+                    items(files.size) { index ->
+                        val filePath = files[index]
+                        val image = renderPdfPage(filePath)
 
-                        val filePath = files[it].toString()
-                        Text(filePath)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f) // 👈 keeps cells square, change as needed
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .clickable { /* handle click if needed */ }
+                                .padding(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            if (image != null) {
+                                Image(
+                                    bitmap = image,
+                                    contentDescription = "PDF preview",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(6.dp)),
+                                    contentScale = ContentScale.Crop // 👈 makes images fill evenly
+                                )
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Gray.copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("No preview")
+                                }
+                            }
 
-                        /*val image = renderPdfPage(filePath)
-                       if (image != null) {
-                            Image(
-                                bitmap = image,
-                                contentDescription = "PDF preview"
+                            Spacer(Modifier.height(6.dp))
+                            Text(
+                                text = filePath.substringAfterLast("/"),
+                                style = MaterialTheme.typography.bodySmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
-                        }*/
-
-                    }
-                    item {
-                        Box(Modifier.height(70.dp))
+                        }
                     }
                 }
+
             }
             Row(
                 modifier = Modifier
@@ -130,11 +162,6 @@ fun App() {
     }
 }
 
-
-expect fun openFile(file: File, appIdentifier: String? = null)
-
-@Composable
-expect fun FilePicker()
 expect fun renderPdfPage(path: String, page: Int = 0): ImageBitmap?
 
 

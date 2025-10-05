@@ -1,0 +1,63 @@
+package org.polyface.libraria
+
+import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import java.io.File
+
+
+@Composable
+actual fun FilePicker() {
+    val context = LocalContext.current
+    val result = remember { mutableStateOf<Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) {
+        result.value = it
+    }
+
+    Column {
+        Button(onClick = { launcher.launch(arrayOf("application/pdf")) }) {
+            Text("Select Document")
+        }
+
+        result.value?.let { uri ->
+            Text(text = "Document URI: $uri")
+            println(uri)
+            // Copy to app-internal storage
+            LaunchedEffect(uri) {
+                moveFile(uri, context, getFileName(context, uri))
+            }
+            targetFiles = listFiles(context)
+        }
+    }
+}
+
+fun moveFile(uri: Uri, context: Context, newFileName: String) {
+    // Open input stream from content URI
+    val inputStream = context.contentResolver.openInputStream(uri)
+        ?: throw IllegalArgumentException("Cannot open input stream for URI: $uri")
+
+    // Create destination file in app's internal storage
+    val newFile = File(context.filesDir, newFileName)
+
+    // Make sure parent directories exist
+    newFile.parentFile?.mkdirs()
+
+    // Copy safely
+    inputStream.use { input ->
+        newFile.outputStream().use { output ->
+            input.copyTo(output)
+        }
+    }
+
+    println("Successfully copied file to: ${newFile.absolutePath}")
+}

@@ -1,5 +1,6 @@
 package org.polyface.libraria
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
+import androidx.core.graphics.createBitmap
 
 lateinit var appContext: Context // Initialize this in your Android Application class
 
@@ -36,7 +38,11 @@ lateinit var appContext: Context // Initialize this in your Android Application 
 actual var targetFiles = arrayOf<String>()
 
 fun initTargetDir(context: Context) {
-    targetFiles = context.filesDir.listFiles()?.map { it.toString() }?.toTypedArray() ?: arrayOf()
+    targetFiles = context.filesDir.listFiles()
+        ?.filter { !it.isDirectory && it.isFile && it.name.endsWith(".pdf", ignoreCase = true) }
+        ?.map { it.absolutePath }
+        ?.toTypedArray()
+        ?: emptyArray()
 }
 
 // In your Activity onCreate:
@@ -51,7 +57,8 @@ class MainActivity : ComponentActivity() {
             App()
         }
     }
-}/*
+}
+/*
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -68,20 +75,24 @@ class MainActivity : ComponentActivity() {
 fun AppAndroidPreview() {
     val context = LocalContext.current
     targetFiles = listFiles(context)
+
     App()
 
 }
 fun listFiles(context : Context): Array<String> {
-    return context.filesDir.listFiles().map { it.toString() }.toTypedArray()
+    return context.filesDir
+        .listFiles()
+        ?.filter { it.isFile && it.name.endsWith(".pdf", ignoreCase = true)  }
+        ?.map { it.absolutePath }
+        ?.toTypedArray()
+        ?: emptyArray()
 }
+
 actual fun openFile(file: File, appIdentifier: String?) {
     if (!file.exists()) return
 
-    val uri: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    val uri: Uri =
         FileProvider.getUriForFile(appContext, "${appContext.packageName}.provider", file)
-    } else {
-        Uri.fromFile(file)
-    }
 
     val intent = Intent(Intent.ACTION_VIEW).apply {
         setDataAndType(uri, getMimeType(file))
@@ -106,45 +117,19 @@ private fun getMimeType(file: File): String = when (file.extension.lowercase()) 
     else -> "*/*"
 }
 
-
-
-
 actual fun renderPdfPage(path: String, page: Int): ImageBitmap? {
+    println("path : $path")
+
     val file = File(path)
+
     val fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     val renderer = PdfRenderer(fileDescriptor)
     val pageObj = renderer.openPage(page)
-    val bitmap = Bitmap.createBitmap(pageObj.width, pageObj.height, Bitmap.Config.ARGB_8888)
+    val bitmap = createBitmap(pageObj.width, pageObj.height)
     pageObj.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
     pageObj.close()
     renderer.close()
     return bitmap.asImageBitmap()
-}
-
-@Composable
-actual fun FilePicker() {
-    val context = LocalContext.current
-    val result = remember { mutableStateOf<Uri?>(null) }
-
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) {
-        result.value = it
-    }
-
-    Column {
-        Button(onClick = { launcher.launch(arrayOf("application/pdf")) }) {
-            Text("Select Document")
-        }
-
-        result.value?.let { uri ->
-            Text(text = "Document URI: $uri")
-            println(uri)
-            // Copy to app-internal storage
-            LaunchedEffect(uri) {
-                moveFile(uri, context, getFileName(context, uri))
-            }
-            targetFiles = listFiles(context)
-        }
-    }
 }
 
 
@@ -167,25 +152,5 @@ fun getFileName(context: Context, uri: Uri): String {
 }
 
 
-fun moveFile(uri: Uri, context: Context, newFileName: String) {
-    // Open input stream from content URI
-    val inputStream = context.contentResolver.openInputStream(uri)
-        ?: throw IllegalArgumentException("Cannot open input stream for URI: $uri")
-
-    // Create destination file in app's internal storage
-    val newFile = File(context.filesDir, newFileName)
-
-    // Make sure parent directories exist
-    newFile.parentFile?.mkdirs()
-
-    // Copy safely
-    inputStream.use { input ->
-        newFile.outputStream().use { output ->
-            input.copyTo(output)
-        }
-    }
-
-    println("Successfully copied file to: ${newFile.absolutePath}")
-}
 
 

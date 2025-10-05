@@ -24,9 +24,19 @@ fun main() = application {
         targetFiles = listFiles()
     }
 }
+
 fun listFiles(): Array<String> {
-    return File("./files").listFiles().map { it.toString() }.toTypedArray()
+    val file = File("./files")
+    if (!file.exists()) {
+        file.mkdir()
+    }
+
+    return file.listFiles() ?.filter { !it.isDirectory &&it.isFile && it.name.endsWith(".pdf", ignoreCase = true) }
+        ?.map { it.absolutePath }
+        ?.toTypedArray()
+        ?: emptyArray()
 }
+
 actual fun openFile(file: File, appIdentifier: String?) {
     if (!file.exists()) return
 
@@ -47,33 +57,6 @@ actual fun openFile(file: File, appIdentifier: String?) {
 
 
 
-@Composable
-actual fun FilePicker() {
-
-    Button(onClick = {
-        val fileDialog = java.awt.FileDialog(null as java.awt.Frame?, "Pick a file")
-        fileDialog.filenameFilter = java.io.FilenameFilter { _, name ->
-            name.lowercase().endsWith(".pdf")
-        }
-
-        fileDialog.isVisible = true
-        if (fileDialog.file != null) {
-            val chosen = "${fileDialog.directory}${fileDialog.file}"
-            println(chosen)
-            moveFile(chosen)
-            targetFiles = listFiles()
-
-        }
-    }) {
-        Text("Pick a file")
-    }
-}
- fun moveFile(path : String) {
-    val oldFile = File(path)
-     val newFile = File("./files", oldFile.name)
-     oldFile.copyTo(newFile)
-}
-// jvmMain
 actual fun renderPdfPage(path: String, page: Int): ImageBitmap? {
     val doc = PDDocument.load(File(path))
     val renderer = PDFRenderer(doc)
