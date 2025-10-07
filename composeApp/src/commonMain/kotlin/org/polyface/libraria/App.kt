@@ -12,18 +12,24 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -49,18 +55,20 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.listDirectoryEntries
 
-expect var targetFiles : Array<String>
+val filesDir = "files"
+val pictureDir = "picture"
+val baseDirectory: String by lazy { getBaseDirectory() }
 @Composable
 @Preview
 fun App() {
 
     MaterialTheme {
-        var showAddPdf by remember { mutableStateOf(false) }
-        val files = targetFiles
+        val files = listFiles()
+
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize(), // Make the Column take the whole screen,
+                    .fillMaxWidth().fillMaxHeight(0.85F),
                 verticalArrangement = Arrangement.Center, // Center content vertically
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -73,46 +81,44 @@ fun App() {
                 ) {
                     items(files.size) { index ->
                         val filePath = files[index]
-                        val image = renderPdfPage(filePath)
+                        val image = pngBitmapForPdf(filePath)
 
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .aspectRatio(1f) // 👈 keeps cells square, change as needed
+                                .aspectRatio(1f)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .clickable { /* handle click if needed */ }
+                                .clickable { openFile(File(files[index])) }
                                 .padding(8.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            if (image != null) {
-                                Image(
-                                    bitmap = image,
-                                    contentDescription = "PDF preview",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(RoundedCornerShape(6.dp)),
-                                    contentScale = ContentScale.Crop // 👈 makes images fill evenly
-                                )
-                            } else {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(Color.Gray.copy(alpha = 0.2f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text("No preview")
-                                }
-                            }
-
-                            Spacer(Modifier.height(6.dp))
-                            Text(
-                                text = filePath.substringAfterLast("/"),
-                                style = MaterialTheme.typography.bodySmall,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                            Image(
+                                bitmap = image,
+                                contentDescription = "PDF preview",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(6.dp)),
+                                contentScale = ContentScale.Crop
                             )
+                            Row (    modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)){
+                                TrashButton()
+
+                                Spacer(Modifier.width(1.dp))
+                                Text(
+                                    text = filePath.substringAfterLast("/"),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+
+                                )
+                            }
                         }
                     }
                 }
@@ -127,59 +133,26 @@ fun App() {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
-                    onClick = { showAddPdf = true },
-                ) {
-                    Text("Add a pdf")
-                }
+                FilePicker()
                 Spacer(Modifier.padding(5.dp))
-                Button(
-                    onClick = { /* action here */ }
-                ) {
-                    Text("Hewo 2")
-                }
-            }
-            if (showAddPdf) {
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .background(Color.Magenta, shape = RoundedCornerShape(16.dp) )
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    FilePicker()
 
-                    Button(
-                        shape = ButtonDefaults.textShape,
-                        onClick = { showAddPdf = false },
-                    ) {
-                        Text("Close")
-                    }
-                    }
             }
+
         }
     }
 }
-
-expect fun renderPdfPage(path: String, page: Int = 0): ImageBitmap?
-
-
+expect fun listFiles(path : String? = null) : Array<String>
+expect fun renderPdfPage(path: String, page: Int = 0): ImageBitmap
+expect  fun getBaseDirectory(): String
+expect fun pngBitmapForPdf(path: String) : ImageBitmap
 @Composable
-fun PdfPreview(path: String) {
-    renderPdfPage(path)?.let { img ->
-        Image(bitmap = img, contentDescription = "PDF Preview")
+fun TrashButton() {
+    IconButton(onClick = {}) {
+        Icon(
+            imageVector =  Icons.Default.Delete,
+            contentDescription = "Delete",
+        )
     }
 }
 
-/*
-fun moveFile(file: String) {
-    val source = File(file)
 
-    val target = File(targetDir, source.name)
-
-    // copy file contents
-    source.copyTo(target, overwrite = true)
-}
-
- */

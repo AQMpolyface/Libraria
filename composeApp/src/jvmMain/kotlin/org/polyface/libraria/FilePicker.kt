@@ -20,7 +20,6 @@ actual fun FilePicker() {
             val chosen = "${fileDialog.directory}${fileDialog.file}"
             println(chosen)
             moveFile(chosen)
-            targetFiles = listFiles()
 
         }
     }) {

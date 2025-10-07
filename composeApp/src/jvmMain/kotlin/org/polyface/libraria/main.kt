@@ -5,15 +5,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asComposeImageBitmap
+import androidx.compose.ui.graphics.asSkiaBitmap
+import androidx.compose.ui.graphics.decodeToImageBitmap
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
+import org.jetbrains.skia.Bitmap
+import org.jetbrains.skia.Data
+import org.jetbrains.skia.EncodedImageFormat
+import org.jetbrains.skia.Image
 import org.jetbrains.skiko.toBitmap
 import java.io.File
 import java.awt.Desktop
-
-actual var targetFiles : Array<String> = arrayOf("")
+import java.io.ByteArrayOutputStream
 
 fun main() = application {
     Window(
@@ -21,22 +26,44 @@ fun main() = application {
         title = "Libraria",
     ) {
         App()
-        targetFiles = listFiles()
     }
 }
 
-fun listFiles(): Array<String> {
-    val file = File("./files")
+actual  fun listFiles(path : String? ): Array<String> {
+    val file = File(filesDir)
     if (!file.exists()) {
         file.mkdir()
     }
 
-    return file.listFiles() ?.filter { !it.isDirectory &&it.isFile && it.name.endsWith(".pdf", ignoreCase = true) }
+    val ff = file.listFiles() ?.filter { !it.isDirectory && it.isFile && it.name.endsWith(".pdf", ignoreCase = true) }
         ?.map { it.absolutePath }
         ?.toTypedArray()
         ?: emptyArray()
+
+
+    return ff
 }
 
+fun getAppDataDir(): File {
+    val home = System.getProperty("user.home")
+    val os = System.getProperty("os.name").lowercase()
+
+    val baseDir = when {
+        os.contains("win") -> File(System.getenv("APPDATA") ?: "$home/AppData/Roaming")
+        os.contains("mac") -> File("$home/Library/Application Support")
+        else -> File("$home/.local/share") // Linux/BSD etc.
+    }
+
+    val appDir = File(baseDir, "MyAppName")
+    if (!appDir.exists()) appDir.mkdirs()
+
+    return appDir
+}
+
+
+actual fun getBaseDirectory(): String {
+    return getAppDataDir().path
+}
 actual fun openFile(file: File, appIdentifier: String?) {
     if (!file.exists()) return
 
@@ -57,10 +84,46 @@ actual fun openFile(file: File, appIdentifier: String?) {
 
 
 
-actual fun renderPdfPage(path: String, page: Int): ImageBitmap? {
+actual fun renderPdfPage(path: String, page: Int): ImageBitmap {
     val doc = PDDocument.load(File(path))
     val renderer = PDFRenderer(doc)
     val awtImage = renderer.renderImageWithDPI(page, 150f)
     doc.close()
-    return awtImage.toBitmap().asComposeImageBitmap()
+    val image = awtImage.toBitmap()
+
+    return image.asComposeImageBitmap()
+}
+
+actual fun pngBitmapForPdf(path: String) : ImageBitmap {
+    val picDir = File("$baseDirectory$pictureDir")
+    if (!picDir.exists()) {
+        picDir.mkdir()
+    }
+    val actualFileName = "$baseDirectory$pictureDir${path.substringAfterLast('/').substringBeforeLast(".")}.png"
+    val picFile = File(actualFileName)
+    if (picFile.exists()) {
+        return picFile.readBytes().decodeToImageBitmap()
+    }
+    val pdfPage = renderPdfPage(path,0)
+
+    val pngFileName = renderAndWritePng(pdfPage.asSkiaBitmap(),path)
+    val pngFile = File(pngFileName)
+    return pngFile.readBytes().decodeToImageBitmap()
+}
+
+fun renderAndWritePng(image: Bitmap, fileName: String): String {
+    val picDir = File("$baseDirectory$pictureDir")
+    if (!picDir.exists()) {
+        picDir.mkdir()
+    }
+    val actualFileName = "$baseDirectory$pictureDir${fileName.substringAfterLast('/').substringBeforeLast(".")}.png"
+    val picFile = File(actualFileName)
+
+    val bitmap = image.makeClone()
+    val newImage: Image = Image.makeFromBitmap(bitmap)
+    val data: Data? = newImage.encodeToData(EncodedImageFormat.PNG)
+    val byteArray: ByteArray = data?.bytes ?: ByteArray(0)
+    picFile.writeBytes(byteArray)
+    println("yay wrote ${picFile.path}")
+    return actualFileName
 }
