@@ -49,6 +49,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import libraria.composeapp.generated.resources.Res
 import libraria.composeapp.generated.resources.compose_multiplatform
+import org.jetbrains.skia.Bitmap
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Path
@@ -142,9 +143,11 @@ fun App() {
     }
 }
 expect fun listFiles(path : String? = null) : Array<String>
+/*
 expect fun renderPdfPage(path: String, page: Int = 0): ImageBitmap
-expect  fun getBaseDirectory(): String
-expect fun pngBitmapForPdf(path: String) : ImageBitmap
+*/
+
+
 @Composable
 fun TrashButton() {
     IconButton(onClick = {}) {

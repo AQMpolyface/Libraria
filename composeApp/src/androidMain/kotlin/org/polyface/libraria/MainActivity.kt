@@ -12,7 +12,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.decodeToImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.FileProvider
@@ -139,36 +141,6 @@ actual fun renderPdfPage(path: String, page: Int): ImageBitmap? {
 
     return bitmap.asImageBitmap()
 }*/
-
-actual fun renderPdfPage(path: String, page: Int): ImageBitmap? {
-
-    val file = File(path)
-
-    val fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
-    val renderer = PdfRenderer(fileDescriptor)
-    val pageObj = renderer.openPage(page)
-    val bitmap = createBitmap(pageObj.width, pageObj.height)
-    pageObj.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-    pageObj.close()
-    renderer.close()
-    fileDescriptor.close()
-
-    // convert bitmap into byte array to write it to a file
-    val stream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-    val byteArray = stream.toByteArray()
-
-    val picDir = File("$baseDirectory$pictureDir")
-    if (!picDir.exists()) {
-        picDir.mkdir()
-    }
-    
-    val picFile = File("$baseDirectory$pictureDir${path.substringAfterLast('/')}.png")
-    picFile.writeBytes(byteArray)
-
-    return bitmap.asImageBitmap()
-}
-
 
 
 
