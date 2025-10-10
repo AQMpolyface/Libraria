@@ -17,7 +17,7 @@ import java.io.File
 
 
 @Composable
-actual fun FilePicker() {
+actual fun FilePicker(lambda: () -> Unit) {
     val context = LocalContext.current
     val result = remember { mutableStateOf<Uri?>(null) }
 
@@ -36,6 +36,7 @@ actual fun FilePicker() {
             // Copy to app-internal storage
             LaunchedEffect(uri) {
                 moveFile(uri, context, getFileName(context, uri))
+                lambda()
             }
         }
     }

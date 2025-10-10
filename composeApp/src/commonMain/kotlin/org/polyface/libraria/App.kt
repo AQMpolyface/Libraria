@@ -1,9 +1,8 @@
 package org.polyface.libraria
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,62 +14,51 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.*
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
-import com.sun.jndi.toolkit.url.Uri
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import libraria.composeapp.generated.resources.Res
-import libraria.composeapp.generated.resources.compose_multiplatform
-import org.jetbrains.skia.Bitmap
 import java.io.File
-import java.io.InputStream
-import java.nio.file.Path
-import kotlin.io.path.Path
-import kotlin.io.path.listDirectoryEntries
 
-val filesDir = "files"
-val pictureDir = "picture"
+val filesDir = "files/"
+val pictureDir = "picture/"
 val baseDirectory: String by lazy { getBaseDirectory() }
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 @Preview
 fun App() {
-
     MaterialTheme {
-        val files = listFiles()
+        var files by remember { mutableStateOf(listFiles()) }
+        var fileToDelete by remember { mutableStateOf<String?>(null) }
 
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth().fillMaxHeight(0.85F),
-                verticalArrangement = Arrangement.Center, // Center content vertically
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.85F),
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LazyVerticalGrid(
@@ -90,8 +78,11 @@ fun App() {
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .clickable { openFile(File(files[index])) }
+                                .clickable(enabled = true, onClick = {
+                                    openFile(File(filePath))
+                                })
                                 .padding(8.dp),
+
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -104,12 +95,16 @@ fun App() {
                                     .clip(RoundedCornerShape(6.dp)),
                                 contentScale = ContentScale.Crop
                             )
-                            Row (    modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 6.dp),
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 6.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)){
-                                TrashButton()
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                TrashButton(onClick = {
+                                    fileToDelete = filePath
+                                })
 
                                 Spacer(Modifier.width(1.dp))
                                 Text(
@@ -117,45 +112,89 @@ fun App() {
                                     style = MaterialTheme.typography.bodySmall,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
-
                                 )
                             }
                         }
                     }
                 }
-
             }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
                     .background(Color.Cyan)
-                    .padding(16.dp), // optional padding
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FilePicker()
-                Spacer(Modifier.padding(5.dp))
+                FilePicker(
+                    lambda = {
+                        files = listFiles()
+                        
+                        for (string in files) {
+                            println(string)
+                        }
 
+                    }
+                )
+                Spacer(Modifier.padding(5.dp))
             }
 
+            // show confirmation popup if a file was selected
+            if (fileToDelete != null) {
+                ConfirmPopup(
+                    message = "Delete ${fileToDelete!!.substringAfterLast("/")}?",
+                    onConfirm = {
+                        deleteFileFromPath(fileToDelete!!)
+                        files = files.filter { it != fileToDelete }.toTypedArray()
+
+                        fileToDelete = null
+                    },
+                    onCancel = {
+                        fileToDelete = null
+                    }
+                )
+            }
         }
     }
 }
+
 expect fun listFiles(path : String? = null) : Array<String>
 /*
 expect fun renderPdfPage(path: String, page: Int = 0): ImageBitmap
 */
-
-
 @Composable
-fun TrashButton() {
-    IconButton(onClick = {}) {
+fun TrashButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
         Icon(
-            imageVector =  Icons.Default.Delete,
-            contentDescription = "Delete",
+            imageVector = Icons.Default.Delete,
+            contentDescription = "Delete"
         )
     }
 }
+
+    @Composable
+    fun ConfirmPopup(
+        message: String,
+        onConfirm: () -> Unit,
+        onCancel: () -> Unit
+    ) {
+        AlertDialog(
+            onDismissRequest = { onCancel() },
+            title = { Text("Confirm Deletion") },
+            text = { Text(message) },
+            confirmButton = {
+                TextButton(onClick = onConfirm) {
+                    Text("Delete", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onCancel) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
 

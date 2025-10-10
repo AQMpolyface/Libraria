@@ -7,4 +7,4 @@ import java.io.File
 expect fun openFile(file: File, appIdentifier: String? = null)
 
 @Composable
-expect fun FilePicker()
+expect fun FilePicker(lambda : () -> Unit)

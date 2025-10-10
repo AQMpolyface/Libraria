@@ -7,7 +7,7 @@ import java.io.File
 
 
 @Composable
-actual fun FilePicker() {
+actual fun FilePicker(lambda: () -> Unit) {
 
     Button(onClick = {
         val fileDialog = java.awt.FileDialog(null as java.awt.Frame?, "Pick a file")
@@ -20,6 +20,7 @@ actual fun FilePicker() {
             val chosen = "${fileDialog.directory}${fileDialog.file}"
             println(chosen)
             moveFile(chosen)
+            lambda()
 
         }
     }) {

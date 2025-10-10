@@ -12,6 +12,8 @@ import org.jetbrains.skiko.toBitmap
 import java.io.File
 
 
+
+
 fun renderPdfPage(path: String, page: Int): Bitmap {
     val doc = PDDocument.load(File(path))
     val renderer = PDFRenderer(doc)
@@ -27,7 +29,11 @@ actual fun pngBitmapForPdf(path: String) : ImageBitmap {
     if (!picDir.exists()) {
         picDir.mkdir()
     }
+
     val actualFileName = "$baseDirectory$pictureDir${path.substringAfterLast('/').substringBeforeLast(".")}.png"
+    println(" baseDirectory = $baseDirectory, pictureDir = $pictureDir")
+
+    println("actualFileName = $actualFileName")
     val picFile = File(actualFileName)
     if (picFile.exists()) {
         return picFile.readBytes().decodeToImageBitmap()

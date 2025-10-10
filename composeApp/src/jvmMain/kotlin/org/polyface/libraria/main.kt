@@ -54,7 +54,7 @@ fun getAppDataDir(): File {
         else -> File("$home/.local/share") // Linux/BSD etc.
     }
 
-    val appDir = File(baseDir, "MyAppName")
+    val appDir = File(baseDir, "Libraria")
     if (!appDir.exists()) appDir.mkdirs()
 
     return appDir
@@ -62,7 +62,7 @@ fun getAppDataDir(): File {
 
 
 actual fun getBaseDirectory(): String {
-    return getAppDataDir().path
+    return getAppDataDir().path + "/"
 }
 actual fun openFile(file: File, appIdentifier: String?) {
     if (!file.exists()) return
