@@ -1,4 +1,4 @@
-package org.polyface.libraria
+package org.polyface.libraria.platform
 
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
@@ -7,6 +7,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.decodeToImageBitmap
 import androidx.core.graphics.createBitmap
+import org.polyface.libraria.baseDirectory
+import org.polyface.libraria.pictureDir
 import java.io.ByteArrayOutputStream
 import java.io.File
 

@@ -1,4 +1,4 @@
-package org.polyface.libraria
+package org.polyface.libraria.platform
 
 import android.content.Context
 import android.net.Uri
