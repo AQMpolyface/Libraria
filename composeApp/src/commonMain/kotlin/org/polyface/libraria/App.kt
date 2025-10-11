@@ -40,6 +40,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.polyface.libraria.domain.util.deleteFileFromPath
+import org.polyface.libraria.platform.FilePicker
+import org.polyface.libraria.platform.getBaseDirectory
+import org.polyface.libraria.platform.listFiles
+import org.polyface.libraria.platform.openFile
+import org.polyface.libraria.platform.pngBitmapForPdf
 import java.io.File
 
 val filesDir = "files/"
@@ -160,10 +166,7 @@ fun App() {
     }
 }
 
-expect fun listFiles(path : String? = null) : Array<String>
-/*
-expect fun renderPdfPage(path: String, page: Int = 0): ImageBitmap
-*/
+
 @Composable
 fun TrashButton(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
