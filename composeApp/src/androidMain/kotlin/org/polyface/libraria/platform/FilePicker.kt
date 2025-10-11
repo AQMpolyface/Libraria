@@ -43,17 +43,13 @@ actual fun FilePicker(lambda: () -> Unit) {
 }
 
 fun moveFile(uri: Uri, context: Context, newFileName: String) {
-    // Open input stream from content URI
     val inputStream = context.contentResolver.openInputStream(uri)
         ?: throw IllegalArgumentException("Cannot open input stream for URI: $uri")
 
-    // Create destination file in app's internal storage
     val newFile = File(context.filesDir, newFileName)
 
-    // Make sure parent directories exist
     newFile.parentFile?.mkdirs()
 
-    // Copy safely
     inputStream.use { input ->
         newFile.outputStream().use { output ->
             input.copyTo(output)

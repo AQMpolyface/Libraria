@@ -3,6 +3,8 @@ package org.polyface.libraria.platform
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import org.polyface.libraria.baseDirectory
+import org.polyface.libraria.filesDir
 import java.io.File
 
 
@@ -29,6 +31,6 @@ actual fun FilePicker(lambda: () -> Unit) {
 }
 fun moveFile(path : String) {
     val oldFile = File(path)
-    val newFile = File("./files", oldFile.name)
+    val newFile = File("$baseDirectory$filesDir${oldFile.name}")
     oldFile.copyTo(newFile)
 }
