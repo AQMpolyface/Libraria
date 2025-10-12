@@ -55,6 +55,7 @@ val baseDirectory: String by lazy { getBaseDirectory() }
 @Composable
 @Preview
 fun App() {
+    HideSystemUI()
     MaterialTheme {
         var files by remember { mutableStateOf(listFiles()) }
         var fileToDelete by remember { mutableStateOf<String?>(null) }
