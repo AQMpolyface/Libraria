@@ -1,3 +1,31 @@
+# Build outputs
 **/build/
 
+# Gradle caches & wrappers
+.gradle/
+**/.gradle/
 
+# IDE stuff
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Local properties
+local.properties
+
+# Kotlin/Native build cache
+.kotlinc/
+.kdoctor/
+
+# Android specific junk
+.cxx/
+captures/
+externalNativeBuild/
+
+# macOS / Windows junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
