@@ -1,0 +1,21 @@
+name: libraria-server
+version: 0.1.0
+
+authors:
+  - polyface <polyface@proton.me>
+
+targets:
+  libraria-server:
+    main: src/libraria-server.cr
+
+
+crystal: '>= 1.17.1'
+
+license: MIT
+
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
