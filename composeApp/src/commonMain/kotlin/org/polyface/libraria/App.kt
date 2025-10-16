@@ -51,7 +51,7 @@ import java.io.File
 val filesDir = "files/"
 val pictureDir = "picture/"
 val baseDirectory: String by lazy { getBaseDirectory() }
-@OptIn(ExperimentalFoundationApi::class)
+
 @Composable
 @Preview
 fun App() {
