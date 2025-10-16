@@ -34,6 +34,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             
             implementation(compose.materialIconsExtended)
+            val ktor_version: String by project
+            implementation("io.ktor:ktor-client-core:${ktor_version}")
+            implementation("io.ktor:ktor-client-cio:${ktor_version}")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -41,7 +44,9 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("org.apache.pdfbox:pdfbox:2.0.30")
+            val pdfbox_version: String by project
+
+            implementation("org.apache.pdfbox:pdfbox:${pdfbox_version}")
         }
     }
 }
