@@ -1,6 +1,6 @@
 # 💖✨ Libraria ~ Your Cutest Lil' PDF Library! ✨💖
 
-Haiiii there, cutie pie! ^w^ Welcome to Libraria, your new chaotic corner for all your PDF bookies! 📚✨ I made it with Compose Multiplatform, so it runs on Android and desktop, nya~! Isn't that just purrfectly pawsome? (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+Haiiii there, cutie pie! ^w^ Welcome to Libraria, your corner for all your PDF bookies! 📚✨ I made it with Compose Multiplatform, so it runs on Android and desktop, nya~! Isn't that just purrfectly pawsome? (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
 
 ### What's the tea, sis? ฅ(ﾐ・ﻌ・ﾐ)ฅ
 *   📖 **See all your stuffs!**: All your PDFs show up in a super cute grid, like, OMG!
@@ -17,7 +17,7 @@ Haiiii there, cutie pie! ^w^ Welcome to Libraria, your new chaotic corner for al
 It's easy-peasy, you got this! Just follow these steps, and don't mess it up! ;p
 
 1.  **Get the stuffs!**: Pwease make sure you have a Java 17 environment all set up and ready to go!
-2.  **Open me!**: Open this project in Android Studio or IntelliJ IDEA. Don't keep me waiting!
+2.  **Open me!**: Open this project in Android Studio or IntelliJ IDEA (recommended).
 
 #### To run on **Android** (your phone!):
 > Just smash that wittle green play button and choose the `composeApp` configuration! Let's gooooo!
@@ -35,8 +35,17 @@ Or for the terminal nerds (teehee):
 > ./gradlew run
 > ```
 
+#### Todo list OwO
+- [ ] embed mupdf into the app
+  - [ ] support for mobi and epub
+  - [ ] in app reader
+- [ ] Optional sync with a self hosted server
+- [ ] Settings page
+
+
 ### Made with lots of sugar, spice, and... 🍰
 *   💜 **Kotlin**: The bestest language!
 *   🚀 **Jetpack Compose Multiplatform**: So we can be everywhere at once! Like a ninja cat! 😼
 
 Thanks for checking out my app! I hope you wuv it and it brings a little bit of chaos to your life! (´｡• ᵕ •｡`) ♡
+
