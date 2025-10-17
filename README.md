@@ -39,7 +39,7 @@ Or for the terminal nerds (teehee):
 - [ ] embed mupdf into the app
   - [ ] support for mobi and epub
   - [ ] in app reader
-- [ ] Optional sync with a self hosted server
+- [ ] Optional sync with a self hosted server across devices
 - [ ] Settings page
 
 
