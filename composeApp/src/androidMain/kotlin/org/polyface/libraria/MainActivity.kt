@@ -20,8 +20,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import org.polyface.libraria.platform.initFileListing
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        System.loadLibrary("mupdf_java")
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         /*window.insetsController?.let { controller ->

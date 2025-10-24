@@ -31,6 +31,6 @@ actual fun FilePicker(lambda: () -> Unit) {
 }
 fun moveFile(path : String) {
     val oldFile = File(path)
-    val newFile = File("$baseDirectory$filesDir${oldFile.name}")
+    val newFile = File("$filesDir${oldFile.name}")
     oldFile.copyTo(newFile)
 }

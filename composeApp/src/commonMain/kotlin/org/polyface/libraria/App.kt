@@ -48,10 +48,10 @@ import org.polyface.libraria.platform.openFile
 import org.polyface.libraria.platform.pngBitmapForPdf
 import java.io.File
 
-val filesDir = "files/"
-val pictureDir = "picture/"
-val baseDirectory: String by lazy { getBaseDirectory() }
 
+val baseDirectory: String by lazy { getBaseDirectory() }
+val filesDir = "${baseDirectory}files/"
+val pictureDir = "${baseDirectory}picture/"
 @Composable
 @Preview
 fun App() {

@@ -31,7 +31,6 @@ actual fun FilePicker(lambda: () -> Unit) {
         }
 
         result.value?.let { uri ->
-            Text(text = "Document URI: $uri")
             println(uri)
             // Copy to app-internal storage
             LaunchedEffect(uri) {

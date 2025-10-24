@@ -4,18 +4,24 @@ import org.polyface.libraria.filesDir
 import java.awt.Desktop
 import java.io.File
 
+
+import com.artifex.mupdf.fitz.Document
+import com.artifex.mupdf.fitz.Matrix
 actual  fun listFiles(path : String? ): Array<String> {
+    println("listing")
     val file = File(filesDir)
     if (!file.exists()) {
         file.mkdir()
     }
-
+    val space = " "
+    println("list : ${file.listFiles().joinToString(space)}")
+println(file.absolutePath)
     val ff = file.listFiles() ?.filter { !it.isDirectory && it.isFile && it.name.endsWith(".pdf", ignoreCase = true) }
         ?.map { it.absolutePath }
         ?.toTypedArray()
         ?: emptyArray()
 
-
+println("resut : ${ff.joinToString { s -> s }}")
     return ff
 }
 

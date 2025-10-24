@@ -5,3 +5,5 @@ import java.io.File
 
 expect  fun getBaseDirectory(): String
 expect fun pngBitmapForPdf(path: String) : ImageBitmap
+
+expect  fun writePdfPageAsPng(pdfpath: String, pngPath: String, pageNumber: Int = 0)

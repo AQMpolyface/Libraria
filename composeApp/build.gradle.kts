@@ -17,13 +17,19 @@ kotlin {
     }
     
     jvm()
-    
+    tasks.withType<JavaExec> {
+        systemProperty("java.library.path", "/home/polyface/Code/kotlin/Libraria/composeApp/src/jvmMain/resources/")
+    }
     sourceSets {
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(files("./src/commonMain/composeResources/files/mupdf-android.jar"))
+
         }
         commonMain.dependencies {
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -45,7 +51,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             val pdfbox_version: String by project
-
+            implementation(files("./src/commonMain/composeResources/files/mupdf.jar"))
             implementation("org.apache.pdfbox:pdfbox:${pdfbox_version}")
         }
     }
