@@ -1,8 +1,4 @@
-def random_string(length) : String
+def random_string(len : Int) : String
   chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  String.build(length) do |io|
-    length.times do
-      io << chars.to_slice.sample
-    end
-  end
+  String.new(Bytes.new(chars.to_slice.sample(len).to_unsafe, len))
 end
