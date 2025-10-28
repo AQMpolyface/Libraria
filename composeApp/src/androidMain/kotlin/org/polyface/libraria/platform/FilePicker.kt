@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import org.polyface.libraria.SUPPORTED_MIME_TYPES
 import java.io.File
 
 
@@ -26,7 +27,7 @@ actual fun FilePicker(lambda: () -> Unit) {
     }
 
     Column {
-        Button(onClick = { launcher.launch(arrayOf("application/pdf")) }) {
+        Button(onClick = { launcher.launch(SUPPORTED_MIME_TYPES ) }) {
             Text("Select Document")
         }
 

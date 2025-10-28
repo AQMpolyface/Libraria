@@ -36,8 +36,8 @@ Or for the terminal nerds (teehee):
 > ```
 
 #### Todo list OwO
-- [ ] embed mupdf into the app
-  - [ ] support for mobi and epub
+- [X] embed mupdf into the app
+  - [X] support for mobi and epub
   - [ ] in app reader
 - [ ] Optional sync with a self hosted server across devices
 - [ ] Settings page

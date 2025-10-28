@@ -16,6 +16,7 @@ import java.io.File
 
 
 actual fun writePdfPageAsPng(pdfpath: String, pngPath : String,  pageNumber: Int) {
+    println("called writePdfPageAsPng")
     val doc = Document.openDocument(pdfpath)
     println("pages ${doc.countPages()}")
     val page = doc.loadPage(pageNumber)
@@ -54,6 +55,7 @@ actual fun pngBitmapForPdf(path: String) : ImageBitmap {
     val actualFileName = "$pictureDir${path.substringAfterLast('/').substringBeforeLast(".")}.png"
     val picFile = File(actualFileName)
     if (picFile.exists()) {
+        println("returning ")
         return picFile.readBytes().decodeToImageBitmap()
     }
 

@@ -25,9 +25,8 @@ actual fun writePdfPageAsPng(pdfpath: String, pngPath : String,  pageNumber: Int
     val matrix = Matrix(1f, 1f)
     val pixmap = page.toPixmap(matrix, ColorSpace.DeviceRGB, false)
     
-    pixmap.saveAsPNG(baos )
+    pixmap.saveAsPNG(pngPath)
 
-    pixmap
     return
 }
 

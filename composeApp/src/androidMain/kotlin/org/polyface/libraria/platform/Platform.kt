@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.content.FileProvider
+import org.polyface.libraria.SUPPORTED_FORMAT
 import java.io.File
+import kotlin.collections.contains
 
 private lateinit var appContext: Context
 
@@ -15,7 +17,7 @@ fun initFileListing(context: Context) {
 
 actual fun listFiles(path: String?): Array<String> {
     val dir = if (path != null) File(path) else appContext.filesDir
-    return dir.listFiles() ?.filter { !it.isDirectory && it.isFile && it.name.endsWith(".pdf", ignoreCase = true) }
+    return dir.listFiles() ?.filter { !it.isDirectory && it.isFile && SUPPORTED_FORMAT.contains(it.name.substringAfterLast(".").lowercase())   }
         ?.map { it.absolutePath }
         ?.toTypedArray()
         ?: emptyArray()
@@ -47,9 +49,18 @@ actual fun openFile(file: File, appIdentifier: String?) {
 }
 
 private fun getMimeType(file: File): String = when (file.extension.lowercase()) {
-    "txt" -> "text/plain"
-    "pdf" -> "application/pdf"
+    "txt"  -> "text/plain"
+    "pdf"  -> "application/pdf"
     "jpg", "jpeg" -> "image/jpeg"
-    "png" -> "image/png"
-    else -> "*/*"
+    "png"  -> "image/png"
+
+    "epub" -> "application/epub+zip"
+    "fb2"  -> "application/x-fictionbook+xml"
+    "mobi" -> "application/x-mobipocket-ebook"
+    "cbz"  -> "application/vnd.comicbook+zip"
+    "xps"  -> "application/oxps"
+
+    else   -> "*/*"
 }
+
+

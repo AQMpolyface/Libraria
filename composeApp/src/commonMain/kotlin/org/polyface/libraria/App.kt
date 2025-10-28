@@ -52,6 +52,16 @@ import java.io.File
 val baseDirectory: String by lazy { getBaseDirectory() }
 val filesDir = "${baseDirectory}files/"
 val pictureDir = "${baseDirectory}picture/"
+
+val SUPPORTED_FORMAT = arrayOf("pdf", "mobi", "epub", "fb2", "cbz", "xps")
+val SUPPORTED_MIME_TYPES = arrayOf(
+    "application/pdf",                 // .pdf
+    "application/epub+zip",            // .epub
+    "application/x-fictionbook+xml",   // .fb2
+    "application/x-mobipocket-ebook",  // .mobi
+    "application/vnd.comicbook+zip",   // .cbz
+    "application/oxps",                // .xps
+)
 @Composable
 @Preview
 fun App() {
