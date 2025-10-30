@@ -19,14 +19,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,12 +34,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.polyface.libraria.components.ConfirmPopup
+import org.polyface.libraria.components.TrashButton
 import org.polyface.libraria.domain.util.deleteFileFromPath
-import org.polyface.libraria.platform.FilePicker
-import org.polyface.libraria.platform.getBaseDirectory
-import org.polyface.libraria.platform.listFiles
-import org.polyface.libraria.platform.openFile
-import org.polyface.libraria.platform.pngBitmapForPdf
+import org.polyface.libraria.shared.FilePicker
+import org.polyface.libraria.shared.getBaseDirectory
+import org.polyface.libraria.shared.listFiles
+import org.polyface.libraria.shared.openFile
+import org.polyface.libraria.shared.pngBitmapForPdf
 import java.io.File
 
 
@@ -176,39 +172,3 @@ fun App() {
         }
     }
 }
-
-
-@Composable
-fun TrashButton(onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
-        Icon(
-            imageVector = Icons.Default.Delete,
-            contentDescription = "Delete"
-        )
-    }
-}
-
-    @Composable
-    fun ConfirmPopup(
-        message: String,
-        onConfirm: () -> Unit,
-        onCancel: () -> Unit
-    ) {
-        AlertDialog(
-            onDismissRequest = { onCancel() },
-            title = { Text("Confirm Deletion") },
-            text = { Text(message) },
-            confirmButton = {
-                TextButton(onClick = onConfirm) {
-                    Text("Delete", color = Color.Red)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onCancel) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-
-

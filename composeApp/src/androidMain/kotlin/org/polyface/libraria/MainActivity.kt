@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import org.polyface.libraria.platform.initFileListing
+import org.polyface.libraria.shared.initFileListing
 
 
 class MainActivity : ComponentActivity() {

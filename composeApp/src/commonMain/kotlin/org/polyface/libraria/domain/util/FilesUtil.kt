@@ -10,5 +10,4 @@ fun deleteFileFromPath(path: String) {
 
     picFile.delete()
     file.delete()
-    println("yay deleted ${picFile.path} and ${file.path}")
 }
